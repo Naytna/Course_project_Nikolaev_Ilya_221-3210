@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker</title>
+
+    <!-- Иконка для разных браузеров -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/main-page/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/main-page/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/main-page/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/main-page/site.webmanifest') }}">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='calendar_styles.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"/>
+    <script defer src="{{ url_for('static', filename='calendar_script.js') }}"></script>
+</head>
+<body>
+    <header>
+        <h1>Tracker</h1>
+        <nav class="text-light">
+            <a href="/">Главная</a>
+            <a href="/profile">Личный кабинет</a>
+            <a href="/logout">Выход</a>
+        </nav>       
+    </header>
+    <nav class="nav-search">
+        <!-- style="padding: 5px; margin: 4px; margin-top: 7px" -->
+        <input class="search-input" type="search" id="search-input" placeholder="Поиск по названию"  class="rounded">
+        <button id="search-btn" class="btn btn-primary" style="padding: 10px; margin-top: -3px">Поиск</button>
+        <br>
+        <!-- <input type="date" id="start-date" name="start-date" class="rounded" style="padding: 5px; margin: 4px; margin-top: 7px">&mdash;
+        <input type="date" id="end-date" name="end-date" class="rounded" style="padding: 5px; margin: 4px; margin-top: 7px"> -->
+
+    </nav>
+
+    <!-- <div class="calendar dark">
+        <div class="dateinput">
+            <input type="date" id="start-date" name="start-date" class="rounded" style="padding: 5px; margin: 4px; margin-top: 7px">&mdash;
+            <input type="date" id="end-date" name="end-date" class="rounded" style="padding: 5px; margin: 4px; margin-top: 7px">
+        </div>
+        <div class="calendar_inner">
+            <div class="calendar_controls">
+                <div class="calendar_headings">
+                    <i class="fa-solid fa-arrow-left" id="prev"></i>
+                    <h2 class="months_year"></h2>
+                    <i class="fa-solid fa-arrow-right" id="next"></i>
+                </div>
+                <div class="current_datetime">
+                    <button type="button" class="btn btn-outline-success btn-sm" id="resetBtn">Reset</button>
+                    <p class="datetxt" id="todayText"></p>
+                </div>
+                <div class="days_date">
+                    <ul class="days">
+                        <li>Sun</li>
+                        <li>Mon</li>
+                        <li>Tue</li>
+                        <li>Wed</li>
+                        <li>Thu</li>
+                        <li>Fri</li>
+                        <li>Sat</li>
+                    </ul>
+                    <ul class="dates"></ul>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="container-fluid">
+        <div class="sidebar-left">
+            
+            <div class="calendar dark">
+                <h2 class="cal-title">Календарь</h2>
+                <div class="dateinput">
+                    <input type="date" id="start-date" name="start-date" class="rounded" style="padding: 5px; margin: 4px; margin-top: 7px">&mdash;
+                    <input type="date" id="end-date" name="end-date" class="rounded" style="padding: 5px; margin: 4px; margin-top: 7px">
+                </div>
+                <div class="calendar_inner">
+                    <div class="calendar_controls">
+                        <div class="calendar_headings">
+                            <i class="fa-solid fa-arrow-left" id="prev"></i>
+                            <h2 class="months_year"></h2>
+                            <i class="fa-solid fa-arrow-right" id="next"></i>
+                        </div>
+                        <div class="current_datetime">
+                            <button type="button" class="btn btn-outline-success btn-sm" id="resetBtn">Reset</button>
+                            <p class="datetxt" id="todayText"></p>
+                        </div>
+                        <div class="days_date">
+                            <ul class="days">
+                                <li>Sun</li>
+                                <li>Mon</li>
+                                <li>Tue</li>
+                                <li>Wed</li>
+                                <li>Thu</li>
+                                <li>Fri</li>
+                                <li>Sat</li>
+                            </ul>
+                            <ul class="dates"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tasks">
+            <h2>Tasks</h2>
+            <div id="task-list">
+                {% for task in tasks %}
+                <div class="card text-center">
+                    <div class="card-header">
+<!--                        <img src="{{ url_for('static', filename='images/dokatilis.jpg') }}" class="rounded" style="max-width: 220px;" alt="task_image">-->
+                        {% if not task.status %}
+                            Выполнено
+                        {% else %}
+                            Не завершено
+                        {% endif %}
+
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ task.title }}</h5>
+                        <p class="card-text">{{ task.description }}</p>
+                        <button type="button" class="get-info btn btn-info" data-bs-toggle="modal" data-bs-target="#viewRecordModal" data-record-id="{{ task.task_id }}" data-record-type="task">Подробнее</button>
+                    </div>
+                    <div class="card-footer text-body-secondary">
+                        Выполнить до: {{ task.due_date | format_date }}
+                    </div>
+                </div>
+                <br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="buttons" style="margin-left: 20px;">
+                <div class="btn-group-vertical">
+                    <button class="btn btn-primary btn-add mb-2 rounded" id="add-record-btn" data-bs-toggle="modal" data-bs-target="#addRecordModal">Добавить новую запись</button>
+                    <button class="btn btn-info mb-2 rounded" id="btn-export">Экспортировать</button>
+                    <button class="btn btn-dark mb-2 rounded" id="btn-import" data-bs-toggle="modal" data-bs-target="#importModal">Импортировать</button>
+                </div>
+            </div>
+            <div class="events">
+                <h2>Events</h2>
+                <div id="event-list">
+                    {% for event in events %}
+                    <div class="event-item"><button type="button" class="btn link-primary get-info" data-bs-toggle="modal" data-bs-target="#viewRecordModal" data-record-id="{{ event.event_id }}" data-record-type="event">{{ event.title }}</button></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно добавления -->
+        {% include 'add_modal.html' %}
+
+        <!-- Модальное окно для просмотра и редактирования записи -->
+        {% include 'view_n_edit_modal.html' %}
+
+        <!-- Модальное окно для импорта -->
+        {% include 'import_csv.html' %}
+    </div>
+    <footer class="mt-auto py-3 fixed-bottom">
+        <div class="container text-center">
+            <span class="text-light">Курсовой проект &#169; Николаев Илья 221-3210</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
